@@ -9,13 +9,19 @@
 > - **This driver is only considered for Samsung Galaxy Tab S6 (LTE/WIFI) and is not recommended for other devices!**
 
 > [!Note]
-> - Due to the incomplete development of the TypeC-PMIC driver program by another branch, which is far from meeting the usable standards, the main branch of the driver program will be restored to a driver with only battery function. In the other branch, we still need to implement IRQ (?) or other methods to trigger the driver program to detect the status of TypeC and make corresponding adjustments based on the status.
+> - ~Due to the incomplete development of the TypeC-PMIC driver program by another branch, which is far from meeting the usable standards, the main branch of the driver program will be restored to a driver with only battery function. In the other branch, we still need to implement IRQ (?) or other methods to trigger the driver program to detect the status of TypeC and make corresponding adjustments based on the status.~
 
 * This driver is designed for the Smaung SM5705 Fuel Gauges found in the Samsung Galaxy Tab S6 LTE/WIFI. 
 * This driver enables Windows to get information about battery packs used in Samsung Galaxy Tab S6 LTE/WIFI. It does not provide charging capabilities.
 
+## Available features 
+* Battery level, voltage, current.
+* **[Inaccurate]** Availability time (needs to be optimized in the future)
+
 ## Future plans
-* Because the USB and charging parts of Samsung Galaxy Tab S6 (WIFI) do not use PM8150B, we plan to modify the driver to control multiple I2C devices for better coordination.
+* ~Because the USB and charging parts of Samsung Galaxy Tab S6 (WIFI) do not use PM8150B, we plan to modify the driver to control multiple I2C devices for better coordination.~
+* Don't want to make the driver program difficult to maintain, so now trying to write separate drivers for each device and then call each other.
+
 ## ACPI Sample
 
 ```asl
