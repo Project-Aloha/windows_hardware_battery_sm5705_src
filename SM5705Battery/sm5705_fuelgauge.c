@@ -11,6 +11,31 @@ Module Name:
 #include "sm5705_fuelgauge.tmh"
 
 NTSTATUS
+sm5705_Get_DeviceId(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG DeviceId
+)
+{
+	NTSTATUS Status = STATUS_SUCCESS;
+	int  ret_DeviceId = 0;
+
+	Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_DEVICE_ID, &ret_DeviceId, 2);
+	if (!NT_SUCCESS(Status))
+	{
+		Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
+		goto Exit;
+	}
+
+	*DeviceId = ret_DeviceId;
+
+Exit:
+	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE,
+		"Leaving %!FUNC!: Status = 0x%08lX\n",
+		Status);
+	return Status;
+}
+
+NTSTATUS
 sm5705_Get_CycleCount(
 	PSURFACE_BATTERY_FDO_DATA DevExt,
 	PULONG CycleCount
@@ -176,6 +201,44 @@ sm5705_Get_Current(
 	}
 
 	*Current = curr;
+
+Exit:
+	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE,
+		"Leaving %!FUNC!: Status = 0x%08lX\n",
+		Status);
+	return Status;
+}
+
+NTSTATUS
+sm5705_Get_OCV(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG OC_Voltage
+)
+{
+	/*
+	 * Read the open-circuit voltage (OCV) data of the SM5705 battery IC through the I2C.
+	*/
+
+	NTSTATUS Status = STATUS_SUCCESS;
+	int  ret_OCV = 0;
+	unsigned int ocv = 0;
+
+	Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_OCV, &ret_OCV, 2);
+	if (!NT_SUCCESS(Status))
+	{
+		Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
+		goto Exit;
+	}
+
+	if (ret_OCV < 0) {
+		ocv = 4000;
+	}
+	else {
+		ocv = ((ret_OCV & 0x7800) >> 11) * 1000; //integer;
+		ocv = ocv + (((ret_OCV & 0x07ff) * 1000) / 2048); // integer + fractional	
+	}
+
+	*OC_Voltage = ocv;
 
 Exit:
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE,
