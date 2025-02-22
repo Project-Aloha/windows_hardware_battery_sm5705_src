@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="miniclass.c" />
+    <ClCompile Include="sm5705_fuelgauge.c" />
     <ClCompile Include="Spb.c" />
     <ClCompile Include="wdf.c" />
   </ItemGroup>

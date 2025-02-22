@@ -166,22 +166,17 @@ struct sec_fuelgauge_info {
 	// struct power_supply* psy_fg;
 	// struct delayed_work isr_work;
 	int cable_type;
-	bool is_charging;
-	bool ta_exist;
 	/* HW-dedicated fuel guage info structure
 	 * used in individual fuel gauge file only
 	 * (ex. dummy_fuelgauge.c)
 	 */
 	struct sec_fg_info info;
-	bool is_fuel_alerted;
-	bool volt_alert_flag;
 	// struct wake_lock fuel_alert_wake_lock;
 	unsigned int capacity_old;	/* only for atomic calculation */
 	unsigned int capacity_max;	/* only for dynamic calculation */
 #if defined(CONFIG_BATTERY_AGE_FORECAST)
 	unsigned int chg_full_soc; /* BATTERY_AGE_FORECAST */
 #endif
-	bool initial_update_of_soc;
 	// struct mutex fg_lock;
 	/* register programming */
 	int reg_addr;
@@ -194,10 +189,6 @@ struct sec_fuelgauge_info {
 	int cv_data_length;
 };
 
-// ssize_t sm5705_fg_show_attrs(struct device* dev, struct device_attribute* attr, char* buf);
-// ssize_t sm5705_fg_store_attrs(struct device* dev, struct device_attribute* attr,
-//	const char* buf, size_t count);
-
 #define SM5705_FG_ATTR(_name)				\
 {							\
 	.attr = {.name = #_name, .mode = 0664},	\
@@ -209,4 +200,35 @@ enum {
 	FG_DATA,
 	FG_REGS,
 };
+
+NTSTATUS
+sm5705_Get_CycleCount(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG CycleCount
+);
+
+NTSTATUS
+sm5705_Get_Temperature(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG Temperature
+);
+
+NTSTATUS
+sm5705_Get_Capacity(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG Capacity
+);
+
+NTSTATUS
+sm5705_Get_Voltage(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG Voltage
+);
+
+NTSTATUS
+sm5705_Get_Current(
+	PSURFACE_BATTERY_FDO_DATA DevExt,
+	PULONG Current
+);
+
 #endif // SM5705_FUELGAUGE_H

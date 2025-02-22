@@ -22,7 +22,7 @@ Abstract:
 #include "usbfnbase.h"
 #include "miniclass.tmh"
 
-#include "sm5705_fuelgauge_impl.h"
+#include "sm5705_fuelgauge.h"
 
 //------------------------------------------------------------------- Prototypes
 
@@ -184,7 +184,8 @@ SM5705BatteryQueryBatteryInformation(
 	PBATTERY_INFORMATION BatteryInformationResult
 )
 {
-	NTSTATUS Status;
+	ULONG            CycleCount;
+	NTSTATUS         Status = STATUS_SUCCESS;
 
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE, "Entering %!FUNC!\n");
 
@@ -206,19 +207,7 @@ SM5705BatteryQueryBatteryInformation(
 	BatteryInformationResult->DefaultAlert2 = BatteryInformationResult->FullChargedCapacity * 9 / 100; // 9% of total capacity for warning
 	BatteryInformationResult->CriticalBias = 0;
 
-	int  ret_cycle  = 0;
-	int  CycleCount = 0;
-	Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_SOC_CYCLE, &ret_cycle, 2);
-	if (!NT_SUCCESS(Status))
-	{
-		Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
-	}
-	if (ret_cycle < 0) {
-		CycleCount = 0;
-	}
-	else {
-		CycleCount = ret_cycle & 0x03FF;
-	}
+	sm5705_Get_CycleCount(DevExt, &CycleCount);
 
 	BatteryInformationResult->CycleCount = CycleCount;
 
@@ -387,8 +376,7 @@ Return Value:
 	WCHAR StringResult[MAX_BATTERY_STRING_SIZE] = { 0 };
 	BATTERY_MANUFACTURE_DATE ManufactureDate = { 0 };
 
-	int ret_Temperature = 0;
-	int Temperature = 0;
+	ULONG  Temperature;
 	USHORT DateData = 0;
 
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE, "Entering %!FUNC!\n");
@@ -581,20 +569,7 @@ Return Value:
 
 	case BatteryTemperature:
 
-		Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_TEMPERATURE, &ret_Temperature, 2);
-		if (!NT_SUCCESS(Status))
-		{
-			Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
-		}
-		if (ret_Temperature < 0) {
-			Temperature = 0;
-		}
-		else {
-			Temperature = ((ret_Temperature & 0x7F00) >> 8) * 10;                  //integer bit
-			Temperature = Temperature + (((ret_Temperature & 0x00f0) * 10) / 256); // integer + fractional bit
-			if (ret_Temperature & 0x8000)
-				Temperature *= -1;
-		}
+		sm5705_Get_Temperature(DevExt, &Temperature);
 
 		Temperature = (ULONG)Temperature / (ULONG)10;
 
@@ -691,59 +666,17 @@ Return Value:
 
 	BatteryStatus->PowerState = BATTERY_DISCHARGING;
 
-	unsigned int     Capacity = 0;
-	unsigned int     Voltage = 0;
-	int              Current = 0;
-	int              ret_Capacity = 0 ;
-	int              ret_Voltage = 0;
-	int              ret_Current = 0;
+	ULONG            Capacity;
+	ULONG            Voltage;
+	ULONG            Current;
 
-	Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_SOC, &ret_Capacity, 2);
-	if (!NT_SUCCESS(Status))
-	{
-		Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
-		goto QueryStatusEnd;
-	}
-	if (ret_Capacity < 0) {
-		Capacity = 500;
-	}
-	else {
-		Capacity = ((ret_Capacity & 0xff00) >> 8) * 10; //integer bit;
-		Capacity = Capacity + (((ret_Capacity & 0x00ff) * 10) / 256); // integer + fractional bit
-	}
+	sm5705_Get_Capacity(DevExt, &Capacity);
 
 	// Voltage(mV)
-	Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_VOLTAGE, &ret_Voltage, 2);
-	if (!NT_SUCCESS(Status))
-	{
-		Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
-		goto QueryStatusEnd;
-	}
-	if (ret_Voltage < 0) {
-		Voltage = 4000;
-	}
-	else {
-		Voltage = ((ret_Voltage & 0x3800) >> 11) * 1000;         //integer;
-		Voltage = Voltage + (((ret_Voltage & 0x07ff) * 1000) / 2048); // integer + fractional
-	}
+	sm5705_Get_Voltage(DevExt, &Voltage);
 
 	// Current (mA)
-	Status = SpbReadDataSynchronously(&DevExt->I2CContext, SM5705_REG_CURRENT, &ret_Current, 2);
-	if (!NT_SUCCESS(Status))
-	{
-		Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SpbReadDataSynchronously failed with Status = 0x%08lX\n", Status);
-		goto QueryStatusEnd;
-	}
-	if (ret_Current < 0)
-	{
-		Current = 0;
-	}
-	else {
-		Current = ((ret_Current & 0x1800) >> 11) * 1000; //integer;
-		Current = Current + (((ret_Current & 0x07ff) * 1000) / 2048); // integer + fractional
-		if (ret_Current & 0x8000)
-			Current *= -1;
-	}
+	sm5705_Get_Current(DevExt, &Current);
 
 	/*
      * BatteryStatus only accepts battery Capacity data in units of mWh,

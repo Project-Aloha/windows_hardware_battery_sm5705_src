@@ -50,5 +50,8 @@
     <ClCompile Include="Spb.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sm5705_fuelgauge.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
