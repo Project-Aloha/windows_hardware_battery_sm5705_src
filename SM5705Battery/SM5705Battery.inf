@@ -4,7 +4,7 @@
 ;
 ;Module Name:
 ;
-;    SM5705FG.inf
+;    SM5705Battery.inf
 ;
 ;Abstract:
 ;
@@ -18,7 +18,7 @@ Class=Battery
 ClassGuid={72631e54-78a4-11d0-bcf7-00aa00b7b32a}
 Provider=%ProviderName%
 DriverVer = 06/15/2020,2.35.139.0
-CatalogFile=SM5705FG.cat
+CatalogFile=SM5705Battery.cat
 PnpLockdown=1
 
 [DestinationDirs]
@@ -28,7 +28,7 @@ DefaultDestDir = 13
 1 = %DiskId1%,,,""
 
 [SourceDisksFiles]
-SM5705FG.sys  = 1,,
+SM5705Battery.sys  = 1,,
 
 ;*****************************************
 ; Surface Battery Mini Class Install Section
@@ -38,37 +38,37 @@ SM5705FG.sys  = 1,,
 %ProviderName%=Standard,NT$ARCH$
 
 [Standard.NT$ARCH$]
-%SM5705FG.DeviceDesc% = SM5705FG_Device, ACPI\BQ27742
+%SM5705Battery.DeviceDesc% = SM5705Battery_Device, ACPI\SM5705FG
 
-[SM5705FG_Device.NT]
-CopyFiles=SM5705FG_Device_Drivers
+[SM5705Battery_Device.NT]
+CopyFiles=SM5705Battery_Device_Drivers
 Include=battery.inf
 Needs=Battery_Inst
 
-[SM5705FG_Device_Drivers]
-SM5705FG.sys
+[SM5705Battery_Device_Drivers]
+SM5705Battery.sys
 
 ;-------------- Service installation
 
-[SM5705FG_Device.NT.Services]
-AddService = SM5705FG,%SPSVCINST_ASSOCSERVICE%,SM5705FG_Service_Inst
+[SM5705Battery_Device.NT.Services]
+AddService = SM5705Battery,%SPSVCINST_ASSOCSERVICE%,SM5705Battery_Service_Inst
 
-; -------------- SM5705FG driver install sections
+; -------------- SM5705Battery driver install sections
 
-[SM5705FG_Service_Inst]
-DisplayName    = %SM5705FG.SVCDESC%
+[SM5705Battery_Service_Inst]
+DisplayName    = %SM5705Battery.SVCDESC%
 ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
 StartType      = 3               ; SERVICE_DEMAND_START
 ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
-ServiceBinary  = %13%\SM5705FG.sys
+ServiceBinary  = %13%\SM5705Battery.sys
 
 ;*****************************************
 ; Literals
 ;*****************************************
 
 [Strings]
-SPSVCINST_ASSOCSERVICE= 0x00000002
-ProviderName = "Samsung"
-DiskId1 = "Samsung SM5705 Fuel Gauge Mini Class Installation Disk"
-SM5705FG.DeviceDesc = "Samsung SM5705 Fuel Gauge"
-SM5705FG.SVCDESC = "Samsung SM5705 Fuel Gauge"
+SPSVCINST_ASSOCSERVICE    = 0x00000002
+ProviderName              = "Samsung"
+DiskId1                   = "Samsung SM5705 Fuel Gauge Mini Class Installation Disk"
+SM5705Battery.DeviceDesc = "Samsung SM5705 Fuel Gauge"
+SM5705Battery.SVCDESC    = "Samsung SM5705 Fuel Gauge Service"

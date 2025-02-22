@@ -14,11 +14,11 @@
     <ClInclude Include="sm5705_fuelgauge.h" />
     <ClInclude Include="sm5705_fuelgauge_impl.h" />
     <ClInclude Include="Spb.h" />
-    <ClInclude Include="SM5705FG.h" />
+    <ClInclude Include="SM5705Battery.h" />
     <ClInclude Include="Trace.h" />
   </ItemGroup>
   <ItemGroup>
-    <Inf Include="SM5705FG.inf" />
+    <Inf Include="SM5705Battery.inf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9E870783-5446-41BB-BD4B-662089C22DBA}</ProjectGuid>
@@ -27,7 +27,8 @@
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <Configuration>Debug</Configuration>
     <Platform Condition="'$(Platform)' == ''">Win32</Platform>
-    <RootNamespace>SM5705FG</RootNamespace>
+    <RootNamespace>SM5705Battery</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">

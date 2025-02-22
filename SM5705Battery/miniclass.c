@@ -17,7 +17,7 @@ Abstract:
 
 //--------------------------------------------------------------------- Includes
 
-#include "SM5705FG.h"
+#include "SM5705Battery.h"
 #include "Spb.h"
 #include "usbfnbase.h"
 #include "miniclass.tmh"
@@ -28,32 +28,32 @@ Abstract:
 
 _IRQL_requires_same_
 VOID
-SM5705FGUpdateTag(
+SM5705BatteryUpdateTag(
 	_Inout_ PSURFACE_BATTERY_FDO_DATA DevExt
 );
 
-BCLASS_QUERY_TAG_CALLBACK SM5705FGQueryTag;
-BCLASS_QUERY_INFORMATION_CALLBACK SM5705FGQueryInformation;
-BCLASS_SET_INFORMATION_CALLBACK SM5705FGSetInformation;
-BCLASS_QUERY_STATUS_CALLBACK SM5705FGQueryStatus;
-BCLASS_SET_STATUS_NOTIFY_CALLBACK SM5705FGSetStatusNotify;
-BCLASS_DISABLE_STATUS_NOTIFY_CALLBACK SM5705FGDisableStatusNotify;
+BCLASS_QUERY_TAG_CALLBACK SM5705BatteryQueryTag;
+BCLASS_QUERY_INFORMATION_CALLBACK SM5705BatteryQueryInformation;
+BCLASS_SET_INFORMATION_CALLBACK SM5705BatterySetInformation;
+BCLASS_QUERY_STATUS_CALLBACK SM5705BatteryQueryStatus;
+BCLASS_SET_STATUS_NOTIFY_CALLBACK SM5705BatterySetStatusNotify;
+BCLASS_DISABLE_STATUS_NOTIFY_CALLBACK SM5705BatteryDisableStatusNotify;
 
 //---------------------------------------------------------------------- Pragmas
 
-#pragma alloc_text(PAGE, SM5705FGPrepareHardware)
-#pragma alloc_text(PAGE, SM5705FGUpdateTag)
-#pragma alloc_text(PAGE, SM5705FGQueryTag)
-#pragma alloc_text(PAGE, SM5705FGQueryInformation)
-#pragma alloc_text(PAGE, SM5705FGQueryStatus)
-#pragma alloc_text(PAGE, SM5705FGSetStatusNotify)
-#pragma alloc_text(PAGE, SM5705FGDisableStatusNotify)
-#pragma alloc_text(PAGE, SM5705FGSetInformation)
+#pragma alloc_text(PAGE, SM5705BatteryPrepareHardware)
+#pragma alloc_text(PAGE, SM5705BatteryUpdateTag)
+#pragma alloc_text(PAGE, SM5705BatteryQueryTag)
+#pragma alloc_text(PAGE, SM5705BatteryQueryInformation)
+#pragma alloc_text(PAGE, SM5705BatteryQueryStatus)
+#pragma alloc_text(PAGE, SM5705BatterySetStatusNotify)
+#pragma alloc_text(PAGE, SM5705BatteryDisableStatusNotify)
+#pragma alloc_text(PAGE, SM5705BatterySetInformation)
 //------------------------------------------------------------ Battery Interface
 
 _Use_decl_annotations_
 VOID
-SM5705FGPrepareHardware(
+SM5705BatteryPrepareHardware(
 	WDFDEVICE Device
 )
 
@@ -84,7 +84,7 @@ Return Value:
 	DevExt = GetDeviceExtension(Device);
 
 	WdfWaitLockAcquire(DevExt->StateLock, NULL);
-	SM5705FGUpdateTag(DevExt);
+	SM5705BatteryUpdateTag(DevExt);
 	WdfWaitLockRelease(DevExt->StateLock);
 
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE,
@@ -95,7 +95,7 @@ Return Value:
 
 _Use_decl_annotations_
 VOID
-SM5705FGUpdateTag(
+SM5705BatteryUpdateTag(
 	PSURFACE_BATTERY_FDO_DATA DevExt
 )
 
@@ -131,7 +131,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGQueryTag(
+SM5705BatteryQueryTag(
 	PVOID Context,
 	PULONG BatteryTag
 )
@@ -179,7 +179,7 @@ Return Value:
 }
 
 NTSTATUS
-SM5705FGQueryBatteryInformation(
+SM5705BatteryQueryBatteryInformation(
 	PSURFACE_BATTERY_FDO_DATA DevExt,
 	PBATTERY_INFORMATION BatteryInformationResult
 )
@@ -251,7 +251,7 @@ Exit:
 }
 
 NTSTATUS
-SM5705FGQueryBatteryEstimatedTime(
+SM5705BatteryQueryBatteryEstimatedTime(
 	PSURFACE_BATTERY_FDO_DATA DevExt,
 	LONG AtRate,
 	PULONG ResultValue
@@ -331,7 +331,7 @@ Exit:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGQueryInformation(
+SM5705BatteryQueryInformation(
 	PVOID Context,
 	ULONG BatteryTag,
 	BATTERY_QUERY_INFORMATION_LEVEL Level,
@@ -411,10 +411,10 @@ Return Value:
 	Status = STATUS_INVALID_DEVICE_REQUEST;
 	switch (Level) {
 	case BatteryInformation:
-		Status = SM5705FGQueryBatteryInformation(DevExt, &BatteryInformationResult);
+		Status = SM5705BatteryQueryBatteryInformation(DevExt, &BatteryInformationResult);
 		if (!NT_SUCCESS(Status))
 		{
-			Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SM5705FGQueryBatteryInformation failed with Status = 0x%08lX\n", Status);
+			Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SM5705BatteryQueryBatteryInformation failed with Status = 0x%08lX\n", Status);
 			goto Exit;
 		}
 
@@ -424,10 +424,10 @@ Return Value:
 		break;
 
 	case BatteryEstimatedTime:
-		Status = SM5705FGQueryBatteryEstimatedTime(DevExt, AtRate, &ResultValue);
+		Status = SM5705BatteryQueryBatteryEstimatedTime(DevExt, AtRate, &ResultValue);
 		if (!NT_SUCCESS(Status))
 		{
-			Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SM5705FGQueryBatteryEstimatedTime failed with Status = 0x%08lX\n", Status);
+			Trace(TRACE_LEVEL_ERROR, SURFACE_BATTERY_TRACE, "SM5705BatteryQueryBatteryEstimatedTime failed with Status = 0x%08lX\n", Status);
 			goto Exit;
 		}
 
@@ -645,7 +645,7 @@ QueryInformationEnd:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGQueryStatus(
+SM5705BatteryQueryStatus(
 	PVOID Context,
 	ULONG BatteryTag,
 	PBATTERY_STATUS BatteryStatus
@@ -783,7 +783,7 @@ QueryStatusEnd:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGSetStatusNotify(
+SM5705BatterySetStatusNotify(
 	PVOID Context,
 	ULONG BatteryTag,
 	PBATTERY_NOTIFY BatteryNotify
@@ -842,7 +842,7 @@ SetStatusNotifyEnd:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGDisableStatusNotify(
+SM5705BatteryDisableStatusNotify(
 	PVOID Context
 )
 
@@ -882,7 +882,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGSetInformation(
+SM5705BatterySetInformation(
 	PVOID Context,
 	ULONG BatteryTag,
 	BATTERY_SET_INFORMATION_LEVEL Level,
@@ -934,14 +934,14 @@ Return Value:
 	if (Level == BatteryCharge)
 	{
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : BatteryCharge\n");
+			"SM5705Battery : BatteryCharge\n");
 
 		Status = STATUS_SUCCESS;
 	}
 	else if (Level == BatteryDischarge)
 	{
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : BatteryDischarge\n");
+			"SM5705Battery : BatteryDischarge\n");
 
 		Status = STATUS_SUCCESS;
 	}
@@ -954,11 +954,11 @@ Return Value:
 		ChargingSource = (PBATTERY_CHARGING_SOURCE)Buffer;
 
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : BatteryChargingSource Type = %d\n",
+			"SM5705Battery : BatteryChargingSource Type = %d\n",
 			ChargingSource->Type);
 
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : Set MaxCurrentDraw = %u mA\n",
+			"SM5705Battery : Set MaxCurrentDraw = %u mA\n",
 			ChargingSource->MaxCurrent);
 
 		Status = STATUS_SUCCESS;
@@ -967,7 +967,7 @@ Return Value:
 	{
 		CriticalBias = (PULONG)Buffer;
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : Set CriticalBias = %u mW\n",
+			"SM5705Battery : Set CriticalBias = %u mW\n",
 			*CriticalBias);
 
 		Status = STATUS_SUCCESS;
@@ -976,7 +976,7 @@ Return Value:
 	{
 		ChargerId = (PBATTERY_CHARGER_ID)Buffer;
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : BatteryChargerId = %!GUID!\n",
+			"SM5705Battery : BatteryChargerId = %!GUID!\n",
 			ChargerId);
 
 		Status = STATUS_SUCCESS;
@@ -986,7 +986,7 @@ Return Value:
 		ChargerStatus = (PBATTERY_CHARGER_STATUS)Buffer;
 
 		Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-			"SM5705FG : BatteryChargingSource Type = %d\n",
+			"SM5705Battery : BatteryChargingSource Type = %d\n",
 			ChargerStatus->Type);
 
 		if (ChargerStatus->Type == BatteryChargingSourceType_USB)
@@ -994,13 +994,13 @@ Return Value:
 			UsbChargerStatus = (PBATTERY_USB_CHARGER_STATUS)Buffer;
 
 			Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-				"SM5705FG : BatteryChargingSourceType_USB: Flags = %d, MaxCurrent = %d, Voltage = %d, PortType = %d, PortId = %llu, OemCharger = %!GUID!\n",
+				"SM5705Battery : BatteryChargingSourceType_USB: Flags = %d, MaxCurrent = %d, Voltage = %d, PortType = %d, PortId = %llu, OemCharger = %!GUID!\n",
 				UsbChargerStatus->Flags, UsbChargerStatus->MaxCurrent, UsbChargerStatus->Voltage, UsbChargerStatus->PortType, UsbChargerStatus->PortId, &UsbChargerStatus->OemCharger);
 
 			UsbFnPortType = (USBFN_PORT_TYPE)(UINT64)UsbChargerStatus->PowerSourceInformation;
 
 			Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_INFO,
-				"SM5705FG : UsbFnPortType = %d\n",
+				"SM5705Battery : UsbFnPortType = %d\n",
 				UsbFnPortType);
 		}
 

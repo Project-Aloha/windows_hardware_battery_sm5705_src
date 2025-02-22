@@ -19,7 +19,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Inf Include="SM5705FG.inf">
+    <Inf Include="SM5705Battery.inf">
       <Filter>Driver Files</Filter>
     </Inf>
   </ItemGroup>
@@ -27,7 +27,7 @@
     <ClInclude Include="Trace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SM5705FG.h">
+    <ClInclude Include="SM5705Battery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Spb.h">

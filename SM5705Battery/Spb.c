@@ -22,7 +22,7 @@
 
 --*/
 
-#include "SM5705FG.h"
+#include "SM5705Battery.h"
 #include "spb.h"
 #include <spb.tmh>
 

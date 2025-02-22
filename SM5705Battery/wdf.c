@@ -17,38 +17,38 @@ Abstract:
 
 //--------------------------------------------------------------------- Includes
 
-#include "SM5705FG.h"
+#include "SM5705Battery.h"
 #include "wdf.tmh"
 
 //------------------------------------------------------------------- Prototypes
 
 DRIVER_INITIALIZE DriverEntry;
-EVT_WDF_DRIVER_DEVICE_ADD SM5705FGDriverDeviceAdd;
-EVT_WDF_DEVICE_SELF_MANAGED_IO_INIT  SM5705FGSelfManagedIoInit;
-EVT_WDF_DEVICE_SELF_MANAGED_IO_CLEANUP  SM5705FGSelfManagedIoCleanup;
-EVT_WDF_DEVICE_QUERY_STOP SM5705FGQueryStop;
-EVT_WDF_DEVICE_PREPARE_HARDWARE SM5705FGDevicePrepareHardware;
-EVT_WDFDEVICE_WDM_IRP_PREPROCESS SM5705FGWdmIrpPreprocessDeviceControl;
-EVT_WDFDEVICE_WDM_IRP_PREPROCESS SM5705FGWdmIrpPreprocessSystemControl;
-WMI_QUERY_REGINFO_CALLBACK SM5705FGQueryWmiRegInfo;
-WMI_QUERY_DATABLOCK_CALLBACK SM5705FGQueryWmiDataBlock;
-EVT_WDF_DRIVER_UNLOAD SM5705FGEvtDriverUnload;
-EVT_WDF_OBJECT_CONTEXT_CLEANUP SM5705FGEvtDriverContextCleanup;
+EVT_WDF_DRIVER_DEVICE_ADD SM5705BatteryDriverDeviceAdd;
+EVT_WDF_DEVICE_SELF_MANAGED_IO_INIT  SM5705BatterySelfManagedIoInit;
+EVT_WDF_DEVICE_SELF_MANAGED_IO_CLEANUP  SM5705BatterySelfManagedIoCleanup;
+EVT_WDF_DEVICE_QUERY_STOP SM5705BatteryQueryStop;
+EVT_WDF_DEVICE_PREPARE_HARDWARE SM5705BatteryDevicePrepareHardware;
+EVT_WDFDEVICE_WDM_IRP_PREPROCESS SM5705BatteryWdmIrpPreprocessDeviceControl;
+EVT_WDFDEVICE_WDM_IRP_PREPROCESS SM5705BatteryWdmIrpPreprocessSystemControl;
+WMI_QUERY_REGINFO_CALLBACK SM5705BatteryQueryWmiRegInfo;
+WMI_QUERY_DATABLOCK_CALLBACK SM5705BatteryQueryWmiDataBlock;
+EVT_WDF_DRIVER_UNLOAD SM5705BatteryEvtDriverUnload;
+EVT_WDF_OBJECT_CONTEXT_CLEANUP SM5705BatteryEvtDriverContextCleanup;
 
 //---------------------------------------------------------------------- Pragmas
 
 #pragma alloc_text(INIT, DriverEntry)
-#pragma alloc_text(PAGE, SM5705FGSelfManagedIoInit)
-#pragma alloc_text(PAGE, SM5705FGSelfManagedIoCleanup)
-#pragma alloc_text(PAGE, SM5705FGQueryStop)
-#pragma alloc_text(PAGE, SM5705FGDriverDeviceAdd)
-#pragma alloc_text(PAGE, SM5705FGDevicePrepareHardware)
-#pragma alloc_text(PAGE, SM5705FGWdmIrpPreprocessDeviceControl)
-#pragma alloc_text(PAGE, SM5705FGWdmIrpPreprocessSystemControl)
-#pragma alloc_text(PAGE, SM5705FGQueryWmiRegInfo)
-#pragma alloc_text(PAGE, SM5705FGQueryWmiDataBlock)
-#pragma alloc_text(PAGE, SM5705FGEvtDriverUnload)
-#pragma alloc_text(PAGE, SM5705FGEvtDriverContextCleanup)
+#pragma alloc_text(PAGE, SM5705BatterySelfManagedIoInit)
+#pragma alloc_text(PAGE, SM5705BatterySelfManagedIoCleanup)
+#pragma alloc_text(PAGE, SM5705BatteryQueryStop)
+#pragma alloc_text(PAGE, SM5705BatteryDriverDeviceAdd)
+#pragma alloc_text(PAGE, SM5705BatteryDevicePrepareHardware)
+#pragma alloc_text(PAGE, SM5705BatteryWdmIrpPreprocessDeviceControl)
+#pragma alloc_text(PAGE, SM5705BatteryWdmIrpPreprocessSystemControl)
+#pragma alloc_text(PAGE, SM5705BatteryQueryWmiRegInfo)
+#pragma alloc_text(PAGE, SM5705BatteryQueryWmiDataBlock)
+#pragma alloc_text(PAGE, SM5705BatteryEvtDriverUnload)
+#pragma alloc_text(PAGE, SM5705BatteryEvtDriverContextCleanup)
 
 //-------------------------------------------------------------------- Functions
 
@@ -94,8 +94,8 @@ Return Value:
 
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE, "Entering %!FUNC!\n");
 
-	WDF_DRIVER_CONFIG_INIT(&DriverConfig, SM5705FGDriverDeviceAdd);
-	DriverConfig.EvtDriverUnload = SM5705FGEvtDriverUnload;
+	WDF_DRIVER_CONFIG_INIT(&DriverConfig, SM5705BatteryDriverDeviceAdd);
+	DriverConfig.EvtDriverUnload = SM5705BatteryEvtDriverUnload;
 	DriverConfig.DriverPoolTag = SURFACE_BATTERY_TAG;
 
 	//
@@ -115,7 +115,7 @@ Return Value:
 		SURFACE_BATTERY_GLOBAL_DATA);
 
 	DriverAttributes.ExecutionLevel = WdfExecutionLevelPassive;
-	DriverAttributes.EvtCleanupCallback = SM5705FGEvtDriverContextCleanup;
+	DriverAttributes.EvtCleanupCallback = SM5705BatteryEvtDriverContextCleanup;
 
 	//
 	// Create the driver object
@@ -149,7 +149,7 @@ DriverEntryEnd:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGDriverDeviceAdd(
+SM5705BatteryDriverDeviceAdd(
 	WDFDRIVER Driver,
 	PWDFDEVICE_INIT DeviceInit
 )
@@ -194,10 +194,10 @@ Return Value:
 	//
 
 	WDF_PNPPOWER_EVENT_CALLBACKS_INIT(&PnpPowerCallbacks);
-	PnpPowerCallbacks.EvtDevicePrepareHardware = SM5705FGDevicePrepareHardware;
-	PnpPowerCallbacks.EvtDeviceSelfManagedIoInit = SM5705FGSelfManagedIoInit;
-	PnpPowerCallbacks.EvtDeviceSelfManagedIoCleanup = SM5705FGSelfManagedIoCleanup;
-	PnpPowerCallbacks.EvtDeviceQueryStop = SM5705FGQueryStop;
+	PnpPowerCallbacks.EvtDevicePrepareHardware = SM5705BatteryDevicePrepareHardware;
+	PnpPowerCallbacks.EvtDeviceSelfManagedIoInit = SM5705BatterySelfManagedIoInit;
+	PnpPowerCallbacks.EvtDeviceSelfManagedIoCleanup = SM5705BatterySelfManagedIoCleanup;
+	PnpPowerCallbacks.EvtDeviceQueryStop = SM5705BatteryQueryStop;
 	WdfDeviceInitSetPnpPowerEventCallbacks(DeviceInit, &PnpPowerCallbacks);
 
 	//
@@ -208,7 +208,7 @@ Return Value:
 
 	Status = WdfDeviceInitAssignWdmIrpPreprocessCallback(
 		DeviceInit,
-		SM5705FGWdmIrpPreprocessDeviceControl,
+		SM5705BatteryWdmIrpPreprocessDeviceControl,
 		IRP_MJ_DEVICE_CONTROL,
 		NULL,
 		0);
@@ -224,7 +224,7 @@ Return Value:
 
 	Status = WdfDeviceInitAssignWdmIrpPreprocessCallback(
 		DeviceInit,
-		SM5705FGWdmIrpPreprocessSystemControl,
+		SM5705BatteryWdmIrpPreprocessSystemControl,
 		IRP_MJ_SYSTEM_CONTROL,
 		NULL,
 		0);
@@ -298,7 +298,7 @@ DriverDeviceAddEnd:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGSelfManagedIoInit(
+SM5705BatterySelfManagedIoInit(
 	WDFDEVICE Device
 )
 
@@ -340,12 +340,12 @@ Return Value:
 	BattInit.MajorVersion = BATTERY_CLASS_MAJOR_VERSION;
 	BattInit.MinorVersion = BATTERY_CLASS_MINOR_VERSION_1;
 	BattInit.Context = DevExt;
-	BattInit.QueryTag = SM5705FGQueryTag;
-	BattInit.QueryInformation = SM5705FGQueryInformation;
-	BattInit.SetInformation = SM5705FGSetInformation;
-	BattInit.QueryStatus = SM5705FGQueryStatus;
-	BattInit.SetStatusNotify = SM5705FGSetStatusNotify;
-	BattInit.DisableStatusNotify = SM5705FGDisableStatusNotify;
+	BattInit.QueryTag = SM5705BatteryQueryTag;
+	BattInit.QueryInformation = SM5705BatteryQueryInformation;
+	BattInit.SetInformation = SM5705BatterySetInformation;
+	BattInit.QueryStatus = SM5705BatteryQueryStatus;
+	BattInit.SetStatusNotify = SM5705BatterySetStatusNotify;
+	BattInit.DisableStatusNotify = SM5705BatteryDisableStatusNotify;
 	BattInit.Pdo = WdfDeviceWdmGetPhysicalDevice(Device);
 	BattInit.DeviceName = NULL;
 	BattInit.Fdo = WdfDeviceWdmGetDeviceObject(Device);
@@ -366,8 +366,8 @@ Return Value:
 
 	DevExt->WmiLibContext.GuidCount = 0;
 	DevExt->WmiLibContext.GuidList = NULL;
-	DevExt->WmiLibContext.QueryWmiRegInfo = SM5705FGQueryWmiRegInfo;
-	DevExt->WmiLibContext.QueryWmiDataBlock = SM5705FGQueryWmiDataBlock;
+	DevExt->WmiLibContext.QueryWmiRegInfo = SM5705BatteryQueryWmiRegInfo;
+	DevExt->WmiLibContext.QueryWmiDataBlock = SM5705BatteryQueryWmiDataBlock;
 	DevExt->WmiLibContext.SetWmiDataBlock = NULL;
 	DevExt->WmiLibContext.SetWmiDataItem = NULL;
 	DevExt->WmiLibContext.ExecuteWmiMethod = NULL;
@@ -394,7 +394,7 @@ DevicePrepareHardwareEnd:
 
 _Use_decl_annotations_
 VOID
-SM5705FGSelfManagedIoCleanup(
+SM5705BatterySelfManagedIoCleanup(
 	WDFDEVICE Device
 )
 
@@ -448,7 +448,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGQueryStop(
+SM5705BatteryQueryStop(
 	_In_ WDFDEVICE Device
 )
 
@@ -460,19 +460,19 @@ Routine Description:
 	device can be stopped so that the PnP manager can redistribute system
 	hardware resources.
 
-	SM5705FG is designed to fail a rebalance operation, for reasons described
+	SM5705Battery is designed to fail a rebalance operation, for reasons described
 	below. Note however that this approach must *not* be adopted by an actual
 	battery driver.
 
-	SM5705FG unregisters itself as a Battery driver by calling
+	SM5705Battery unregisters itself as a Battery driver by calling
 	BatteryClassUnload() when IRP_MN_STOP_DEVICE arrives at the driver. It
 	re-establishes itself as a Battery driver on arrival of IRP_MN_START_DEVICE.
 	This results in any IOCTLs normally handeled by the Battery Class driver to
-	be delivered to SM5705FG. The IO Queue employed by SM5705FG is power managed,
-	it causes these IOCTLs to be pended when SM5705FG is not in D0. Now if the
-	device attempts to do a shutdown while an IOCTL is pended in SM5705FG, it
+	be delivered to SM5705Battery. The IO Queue employed by SM5705Battery is power managed,
+	it causes these IOCTLs to be pended when SM5705Battery is not in D0. Now if the
+	device attempts to do a shutdown while an IOCTL is pended in SM5705Battery, it
 	would result in a 0x9F bugcheck. By opting out of PNP rebalance operation
-	SM5705FG circumvents this issue.
+	SM5705Battery circumvents this issue.
 
 Arguments:
 
@@ -493,7 +493,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGDevicePrepareHardware(
+SM5705BatteryDevicePrepareHardware(
 	WDFDEVICE Device,
 	WDFCMRESLIST ResourcesRaw,
 	WDFCMRESLIST ResourcesTranslated
@@ -592,7 +592,7 @@ Return Value:
 		goto exit;
 	}
 
-	SM5705FGPrepareHardware(Device);
+	SM5705BatteryPrepareHardware(Device);
 
 exit:
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE, "Leaving %!FUNC!: Status = 0x%08lX\n", status);
@@ -601,7 +601,7 @@ exit:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGWdmIrpPreprocessDeviceControl(
+SM5705BatteryWdmIrpPreprocessDeviceControl(
 	WDFDEVICE Device,
 	PIRP Irp
 )
@@ -683,7 +683,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGWdmIrpPreprocessSystemControl(
+SM5705BatteryWdmIrpPreprocessSystemControl(
 	WDFDEVICE Device,
 	PIRP Irp
 )
@@ -771,7 +771,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGQueryWmiRegInfo(
+SM5705BatteryQueryWmiRegInfo(
 	PDEVICE_OBJECT DeviceObject,
 	PULONG RegFlags,
 	PUNICODE_STRING InstanceName,
@@ -847,7 +847,7 @@ Return Value:
 
 _Use_decl_annotations_
 NTSTATUS
-SM5705FGQueryWmiDataBlock(
+SM5705BatteryQueryWmiDataBlock(
 	PDEVICE_OBJECT DeviceObject,
 	PIRP Irp,
 	ULONG GuidIndex,
@@ -915,7 +915,7 @@ Return Value:
 
 	if (InstanceLengthArray == NULL) {
 		Status = STATUS_BUFFER_TOO_SMALL;
-		goto SM5705FGQueryWmiDataBlockEnd;
+		goto SM5705BatteryQueryWmiDataBlockEnd;
 	}
 
 	Device = WdfWdmDeviceGetWdfDeviceHandle(DeviceObject);
@@ -944,14 +944,14 @@ Return Value:
 			IO_NO_INCREMENT);
 	}
 
-SM5705FGQueryWmiDataBlockEnd:
+SM5705BatteryQueryWmiDataBlockEnd:
 	Trace(TRACE_LEVEL_INFORMATION, SURFACE_BATTERY_TRACE, "Leaving %!FUNC!: Status = 0x%08lX\n", Status);
 	return Status;
 }
 
 
 VOID
-SM5705FGEvtDriverContextCleanup(
+SM5705BatteryEvtDriverContextCleanup(
 	_In_ WDFOBJECT DriverObject
 )
 /*++
@@ -982,7 +982,7 @@ Return Value:
 }
 
 VOID
-SM5705FGEvtDriverUnload(
+SM5705BatteryEvtDriverUnload(
 	IN WDFDRIVER Driver
 )
 /*++
